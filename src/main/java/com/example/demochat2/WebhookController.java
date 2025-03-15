@@ -1,5 +1,6 @@
 package com.example.demochat2;
 
+import com.example.demochat2.config.AppConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,17 +14,20 @@ import java.util.Map;
 @RequestMapping("/webhook")
 public class WebhookController {
 
-    @Value("${WEBHOOK_VERIFY_TOKEN}")
-    private String webhookVerifyToken;
+    private final AppConfig appConfig;
+    private final String apiVersion;
+    private final String businessPhone;
+    private final String apiToken;
+    private final String webhookVerifyToken;
 
-    @Value("${API_TOKEN}")
-    private String apiToken;
+    public WebhookController(AppConfig appConfig) {
+        this.appConfig = appConfig;
+        this.apiVersion = appConfig.getApiVersion();
+        this.businessPhone = appConfig.getBusinessPhone();
+        this.apiToken = appConfig.getApiToken();
+        this.webhookVerifyToken = appConfig.getWebhookVerifyToken();
+    }
 
-    @Value("${BUSINESS_PHONE}")
-    private String businessPhone;
-
-    @Value("${API_VERSION}")
-    private String apiVersion;
 
     private final WebClient webClient = WebClient.create("https://graph.facebook.com");
 
