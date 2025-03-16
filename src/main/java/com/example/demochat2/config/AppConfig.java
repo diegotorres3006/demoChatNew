@@ -32,6 +32,9 @@ public class AppConfig {
     @Value("${QUYS_API_FETCH_URL}")
     private String quysApiFetchUrl;
 
+    @Value("${server.port}")
+    private int serverPort;
+
     // Getters
     public String getWebhookVerifyToken() { return webhookVerifyToken; }
     public String getApiToken() { return apiToken; }
@@ -42,6 +45,7 @@ public class AppConfig {
     public String getQuysClientId() { return quysClientId; }
     public String getQuysClientSecret() { return quysClientSecret; }
     public String getQuysApiFetchUrl() { return quysApiFetchUrl; }
+    public int getServerPort() { return serverPort; }
 
 
 }
