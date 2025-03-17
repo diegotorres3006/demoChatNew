@@ -1,6 +1,6 @@
-package com.example.demochat2.services;
-import com.example.demochat2.services.WhatsAppService;
-import com.example.demochat2.models.Message;
+package com.example.demochat2.application.service;
+import com.example.demochat2.infrastructure.adapter.WhatsAppService;
+import com.example.demochat2.domain.model.Message;
 import org.springframework.stereotype.Service;
 
 @Service

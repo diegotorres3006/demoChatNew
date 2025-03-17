@@ -1,9 +1,10 @@
-package com.example.demochat2.controllers;
+package com.example.demochat2.infrastructure.controller;
 
-import com.example.demochat2.config.AppConfig;
-import com.example.demochat2.models.Message;
-import com.example.demochat2.services.MessageHandler;
+import com.example.demochat2.infrastructure.config.AppConfig;
+import com.example.demochat2.domain.model.Message;
+import com.example.demochat2.application.service.MessageHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,10 +54,10 @@ public class WebhookController {
         return ResponseEntity.ok().build();
     }
     @GetMapping
-    public ResponseEntity<String> verifyWebhook(
-            @RequestParam(value = "hub.mode", required = false) String mode,
-            @RequestParam(value = "hub.verify_token", required = false) String token,
-            @RequestParam(value = "hub.challenge", required = false) String challenge) {
+    public ResponseEntity<String> verifyWebhook(HttpServletRequest request) {
+        String mode = request.getParameter("hub.mode");
+        String token = request.getParameter("hub.verify_token");
+        String challenge = request.getParameter("hub.challenge");
 
         if ("subscribe".equals(mode) && webhookVerifyToken.equals(token)) {
             System.out.println("Webhook verified successfully!");

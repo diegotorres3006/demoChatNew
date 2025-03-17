@@ -1,22 +1,18 @@
-package com.example.demochat2;
+package com.example.demochat2.infrastructure;
 
-import com.example.demochat2.config.AppConfig;
-import com.example.demochat2.services.WhatsAppService;
+import com.example.demochat2.infrastructure.config.AppConfig;
+import com.example.demochat2.infrastructure.adapter.WhatsAppService;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/webhook")
-public class App implements CommandLineRunner {
+public class InitializeApp implements CommandLineRunner {
 
 
     private final int serverPort;
 
-    public App(AppConfig appConfig, WhatsAppService whatsappService) {
+    public InitializeApp(AppConfig appConfig, WhatsAppService whatsappService) {
         this.serverPort = appConfig.getServerPort();
     }
 

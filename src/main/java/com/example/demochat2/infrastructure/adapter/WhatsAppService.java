@@ -1,14 +1,9 @@
-package com.example.demochat2.services;
+package com.example.demochat2.infrastructure.adapter;
 
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import com.example.demochat2.config.AppConfig;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import com.example.demochat2.infrastructure.config.AppConfig;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 
 import java.util.Map;

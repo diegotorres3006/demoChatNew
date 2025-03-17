@@ -1,8 +1,9 @@
-package com.example.demochat2.routes;
+package com.example.demochat2.infrastructure.router;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.demochat2.controllers.WebhookController;
+import com.example.demochat2.infrastructure.controller.WebhookController;
 import java.util.Map;
 
 @RestController
@@ -21,10 +22,7 @@ public class Routes {
     }
 
     @GetMapping
-    public ResponseEntity<?> verifyWebhook(
-            @RequestParam(value = "hub.mode", required = false) String mode,
-            @RequestParam(value = "hub.verify_token", required = false) String token,
-            @RequestParam(value = "hub.challenge", required = false) String challenge) {
-        return webhookController.verifyWebhook(mode, token, challenge);
+    public ResponseEntity<?> verifyWebhook(HttpServletRequest request) {
+        return webhookController.verifyWebhook(request);
     }
 }

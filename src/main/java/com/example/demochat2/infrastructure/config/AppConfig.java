@@ -1,4 +1,4 @@
-package com.example.demochat2.config;
+package com.example.demochat2.infrastructure.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
