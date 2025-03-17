@@ -1,4 +1,4 @@
-package com.example.demochat2.infrastructure.controller;
+package com.example.demochat2.infrastructure.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

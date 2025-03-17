@@ -1,5 +1,8 @@
 package com.example.demochat2.infrastructure.config;
+import com.example.demochat2.application.services.RecipesService;
+import com.example.demochat2.infrastructure.adapters.RecipesPortAdapter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
@@ -47,5 +50,9 @@ public class AppConfig {
     public String getQuysApiFetchUrl() { return quysApiFetchUrl; }
     public int getServerPort() { return serverPort; }
 
+    @Bean
+    public RecipesService recipesService(RecipesPortAdapter recipesPortAdapter){
+        return new RecipesService(recipesPortAdapter);
+    }
 
 }

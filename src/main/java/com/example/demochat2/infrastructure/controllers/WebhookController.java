@@ -1,8 +1,8 @@
-package com.example.demochat2.infrastructure.controller;
+package com.example.demochat2.infrastructure.controllers;
 
 import com.example.demochat2.infrastructure.config.AppConfig;
-import com.example.demochat2.domain.model.Message;
-import com.example.demochat2.application.service.MessageHandler;
+import com.example.demochat2.domain.models.Message;
+import com.example.demochat2.application.services.MessageHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

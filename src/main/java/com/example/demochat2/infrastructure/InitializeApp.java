@@ -1,7 +1,7 @@
 package com.example.demochat2.infrastructure;
 
 import com.example.demochat2.infrastructure.config.AppConfig;
-import com.example.demochat2.infrastructure.adapter.WhatsAppService;
+import com.example.demochat2.infrastructure.adapters.WhatsAppService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.web.bind.annotation.*;
 

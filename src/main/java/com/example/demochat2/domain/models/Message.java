@@ -1,4 +1,4 @@
-package com.example.demochat2.domain.model;
+package com.example.demochat2.domain.models;
 
 public class Message {
     private String id;

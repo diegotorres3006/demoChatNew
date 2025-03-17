@@ -3,7 +3,7 @@ package com.example.demochat2.infrastructure.router;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.demochat2.infrastructure.controller.WebhookController;
+import com.example.demochat2.infrastructure.controllers.WebhookController;
 import java.util.Map;
 
 @RestController

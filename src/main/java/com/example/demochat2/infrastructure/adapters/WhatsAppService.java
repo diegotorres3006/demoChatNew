@@ -1,4 +1,4 @@
-package com.example.demochat2.infrastructure.adapter;
+package com.example.demochat2.infrastructure.adapters;
 
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
