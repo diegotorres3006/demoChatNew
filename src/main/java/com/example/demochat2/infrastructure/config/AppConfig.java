@@ -1,5 +1,6 @@
 package com.example.demochat2.infrastructure.config;
 import com.example.demochat2.application.services.RecipesService;
+import com.example.demochat2.application.services.YamlService;
 import com.example.demochat2.infrastructure.adapters.RecipesPortAdapter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -53,6 +54,11 @@ public class AppConfig {
     @Bean
     public RecipesService recipesService(RecipesPortAdapter recipesPortAdapter){
         return new RecipesService(recipesPortAdapter);
+    }
+
+    @Bean
+    public YamlService yamlService(){
+        return new YamlService();
     }
 
 }
