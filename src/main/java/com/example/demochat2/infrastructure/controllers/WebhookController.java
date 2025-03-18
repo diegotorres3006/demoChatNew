@@ -1,5 +1,4 @@
 package com.example.demochat2.infrastructure.controllers;
-
 import com.example.demochat2.infrastructure.config.AppConfig;
 import com.example.demochat2.domain.models.Message;
 import com.example.demochat2.application.services.MessageHandler;
@@ -42,7 +41,7 @@ public class WebhookController {
                             ObjectMapper objectMapper = new ObjectMapper();
                             Message message = objectMapper.convertValue(messageMap, Message.class);
 
-                            // Procesar el mensaje
+                            // Procesar el mensaje // Delegar la lógica al caso de uso
                             messageHandler.handleIncomingMessage(message);
                         }
                     }
@@ -63,7 +62,7 @@ public class WebhookController {
             System.out.println("Webhook verified successfully!");
             return ResponseEntity.ok(challenge);
         } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         }
     }
 }

@@ -1,32 +1,31 @@
+
 package com.example.demochat2.infrastructure.adapters;
 
-import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 import com.example.demochat2.infrastructure.config.AppConfig;
+import com.example.demochat2.domain.ports.MessageSenderPort;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-
 
 import java.util.Map;
 
-@Service
-public class WhatsAppService {
+@Component
+public class WhatsAppAdapter implements MessageSenderPort {
 
     private final String apiVersion;
     private final String businessPhone;
     private final String apiToken;
+    private final WebClient webClient;
 
-
-    public WhatsAppService(AppConfig appConfig) {
+    public WhatsAppAdapter(AppConfig appConfig) {
         this.apiVersion = appConfig.getApiVersion();
         this.businessPhone = appConfig.getBusinessPhone();
         this.apiToken = appConfig.getApiToken();
-
+        this.webClient = WebClient.create("https://graph.facebook.com");
     }
 
-    private final WebClient webClient = WebClient.create("https://graph.facebook.com");
-
-    public Mono<Void> sendMessage(String recipient, String text, String messageId) {
-        return webClient.post()
+    @Override
+    public void sendMessage(String recipient, String text, String messageId) {
+        webClient.post()
                 .uri(String.format("/%s/%s/messages", apiVersion, businessPhone))
                 .headers(headers -> headers.setBearerAuth(apiToken))
                 .bodyValue(Map.of(
@@ -36,11 +35,13 @@ public class WhatsAppService {
                         "context", Map.of("message_id", messageId)
                 ))
                 .retrieve()
-                .bodyToMono(Void.class);
+                .bodyToMono(Void.class)
+                .subscribe();
     }
 
-    public Mono<Void> markAsRead(String messageId) {
-        return webClient.post()
+    @Override
+    public void markAsRead(String messageId) {
+        webClient.post()
                 .uri(String.format("/%s/%s/messages", apiVersion, businessPhone))
                 .headers(headers -> headers.setBearerAuth(apiToken))
                 .bodyValue(Map.of(
@@ -49,8 +50,7 @@ public class WhatsAppService {
                         "message_id", messageId
                 ))
                 .retrieve()
-                .bodyToMono(Void.class);
+                .bodyToMono(Void.class)
+                .subscribe();
     }
-
-
 }

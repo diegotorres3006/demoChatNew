@@ -1,7 +1,7 @@
 package com.example.demochat2.infrastructure;
 
 import com.example.demochat2.infrastructure.config.AppConfig;
-import com.example.demochat2.infrastructure.adapters.WhatsAppService;
+import com.example.demochat2.infrastructure.adapters.WhatsAppAdapter;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +12,7 @@ public class InitializeApp implements CommandLineRunner {
 
     private final int serverPort;
 
-    public InitializeApp(AppConfig appConfig, WhatsAppService whatsappService) {
+    public InitializeApp(AppConfig appConfig, WhatsAppAdapter whatsAppAdapter) {
         this.serverPort = appConfig.getServerPort();
     }
 

@@ -4,8 +4,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@ControllerAdvice
+
 public class HomeController {
+
+
+
+    @GetMapping("/")
+    public ResponseEntity<String> home() {
+        return ResponseEntity.ok("<pre>Nothing to see here.\nCheckout README.md to start.</pre>");
+    }
 
 
     @RequestMapping("/error")
