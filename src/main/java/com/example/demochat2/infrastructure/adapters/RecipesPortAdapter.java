@@ -6,8 +6,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import com.example.demochat2.infrastructure.config.AppConfig;
+
+import com.example.demochat2.Utils;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -16,10 +22,22 @@ public class RecipesPortAdapter implements RecipesPort {
     final int recipesObject = 17421;
 
     private final WebClient.Builder webClientBuilder;
+    private final Utils utils;
+    private final AppConfig appConfig;
+    //Para obtener token
+    private final String quysClientID;
+    private final String quysClientSecret;
+    private final String quysApiFetchUrl;
 
     @Autowired
-    public RecipesPortAdapter(WebClient.Builder webClientBuilder) {
+    public RecipesPortAdapter(WebClient.Builder webClientBuilder, Utils utils, AppConfig appConfig) {
         this.webClientBuilder = webClientBuilder;
+        this.utils = utils;
+        this.appConfig = appConfig;
+
+        this.quysClientID = appConfig.getQuysClientId();
+        this.quysClientSecret = appConfig.getQuysClientSecret();
+        this.quysApiFetchUrl = appConfig.getQuysApiFetchUrl();
     }
 
     @Override
@@ -34,41 +52,50 @@ public class RecipesPortAdapter implements RecipesPort {
     }
 
     public List<Recipe> getRecipes(int objectId, String filterName, Long filterId, int pageSize) {
-        String url = "https://quysqua.uat.ohelit.net/api/"+objectId+"/getalldata?WithRelations=false&page=1&size="+pageSize+"&sort=1(asc)";
-        String token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJWaUtxWjdSTm5ndE1oVDlFQTlrSUNPa3h6OUk4Z083ZkFuVWZuRnowY3FNIn0.eyJleHAiOjE3NDIzMjQ5OTUsImlhdCI6MTc0MjMxNzc5NSwiYXV0aF90aW1lIjoxNzQyMzE2MDczLCJqdGkiOiJiODQxNzM2Ny02NTk3LTQyNDEtYmZjYy03YzExMGFhYzEzODkiLCJpc3MiOiJodHRwczovL2F1dGgudWF0Lm9oZWxpdC5uZXQvYXV0aC9yZWFsbXMvdW5pbW9uc2VycmF0ZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiI4YTlhMTRjOC0xYTE4LTQ0NmMtOWNhNS05MzQ1MDFmYjk1OTAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJ3ZWJfYXBwIiwic2Vzc2lvbl9zdGF0ZSI6IjNkMmY5YTkyLTVhZDYtNDY3OS04Nzc1LWEwYjlmMjkyNTE1MSIsImFsbG93ZWQtb3JpZ2lucyI6WyIqIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJST0xFX0FETUlOX1VOSU1PTiIsIlJPTEVfVVNFUiIsIm9mZmxpbmVfYWNjZXNzIiwiUk9MRV9DSFlfUkVQT19BRE1JTiIsIlJPTEVfQURNSU4iLCJST0xFX0NIWV9ET0NVX0FETUlOIiwiUk9MRV9PQkNfQURNSU4iLCJST0xFX0NIWV9JTlRFX0FETUlOIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwic2lkIjoiM2QyZjlhOTItNWFkNi00Njc5LTg3NzUtYTBiOWYyOTI1MTUxIiwidGVuYW50X2lkIjoyLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInJvbGVzIjpbIlJPTEVfQURNSU5fVU5JTU9OIiwiUk9MRV9VU0VSIiwib2ZmbGluZV9hY2Nlc3MiLCJST0xFX0NIWV9SRVBPX0FETUlOIiwiUk9MRV9BRE1JTiIsIlJPTEVfQ0hZX0RPQ1VfQURNSU4iLCJST0xFX09CQ19BRE1JTiIsIlJPTEVfQ0hZX0lOVEVfQURNSU4iLCJST0xFX0FETUlOX1VOSU1PTiIsIlJPTEVfVVNFUiIsIm9mZmxpbmVfYWNjZXNzIiwiUk9MRV9DSFlfUkVQT19BRE1JTiIsIlJPTEVfQURNSU4iLCJST0xFX0NIWV9ET0NVX0FETUlOIiwiUk9MRV9PQkNfQURNSU4iLCJST0xFX0NIWV9JTlRFX0FETUlOIl0sIm5hbWUiOiJEaWVnbyBBbmRyZXMgVG9ycmVzIFJpdmVyb3MiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJkYXRvcnJlc0B1bmltb25zZXJyYXRlLmVkdS5jbyIsImdpdmVuX25hbWUiOiJEaWVnbyBBbmRyZXMiLCJmYW1pbHlfbmFtZSI6IlRvcnJlcyBSaXZlcm9zIiwiZW1haWwiOiJkYXRvcnJlc0B1bmltb25zZXJyYXRlLmVkdS5jbyJ9.hll1IFCtVM3uiBgDX_lmB_SHjERvC6mrOkO3NJ3_uV9vPMyY3Gb1T2uomBmIcxq9Vj328Db1U1slTGfPkna2k9F1xZ4GtqGpq-MMdycD-8A6DjXxprJ2nVRwDo-yVLabqDzCMoxEhu7gwiqX4b-UAkssX3v4ndCFt8xzwVs6SGeINT4klmPhlmouDWcUigM96oA5hf8V13Aca6qu2Pi8dCHeqv4_fEJZKNbc7rlV6cgbMe7LB3NnSgCsPeOVTadVgKw7dncXNBvXHt8PPFzdnr7fLcxhGJhU2SBBmQT5rLLTk-1bUAQ3mUegj5UjS3L34wjvplCktVBmeZujAv8qBg";
-        WebClient webClient = webClientBuilder.baseUrl(url).build();
+        String url = "https://quysqua.uat.ohelit.net/api/" + objectId + "/getalldata?WithRelations=false&page=1&size=" + pageSize + "&sort=1(asc)";
+        String token2 = utils.getToken(this.quysClientID, this.quysClientSecret, this.quysApiFetchUrl).block();
 
-        String param = null;
 
-        if(filterName != null && filterId != null){
-            param = "{'data':{"+filterName+":"+filterId+"}}";
+        // Construcción del parámetro en formato JSON si se especifica el filtro
+        String body = null;
+        if (filterName != null && filterId != null) {
+            body = "{\"data\":{\"" + filterName + "\":" + filterId + "}}";
         }
 
-        try {
-            // Realizamos la solicitud GET y obtenemos la respuesta
-            String response = webClient.get()
-                    .uri("")
-                    .header("Authorization", "Bearer " + token)
-                    .header("param", param)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block(); // Bloqueamos hasta obtener la respuesta
+        // Llamada a `makeRequest`
+        Mono<ResponseEntity<String>> responseMono = utils.makeRequest(
+                url,
+                HttpMethod.GET,
+                body,
+                token2,
+                "application/json",
+                null, // No hay parámetros
+                null  // No hay headers extra
+        );
 
-            // Parseamos la respuesta JSON
+        try {
+            // bloquear la ejecución hasta recibir el resultado
+            ResponseEntity<String> responseEntity = responseMono.block();
+
+            if (responseEntity == null || responseEntity.getBody() == null) {
+                System.out.println("Error: Respuesta vacía o nula");
+                return List.of();
+            }
+
+            // Parsear la respuesta JSON
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(response); // Leer el JSON como un árbol
-            JsonNode dataNode = rootNode.path("data"); // Obtener el campo "data" que contiene el array
+            JsonNode rootNode = objectMapper.readTree(responseEntity.getBody());
+            JsonNode dataNode = rootNode.path("data"); // Obtener el campo "data"
 
             // Convertir el campo "data" a una lista de listas (por cada receta)
             List<List<Object>> rawItems = objectMapper.readValue(dataNode.toString(), new TypeReference<List<List<Object>>>() {});
 
             // Mapeamos cada item (que es un array) a un objeto Recipe
-            List<Recipe> recipes = mapRawItemsToRecipes(rawItems);
-            return recipes;
+            return mapRawItemsToRecipes(rawItems);
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println( "Error al procesar la respuesta JSON");
+            System.out.println("Error al procesar la respuesta JSON");
             return List.of();
         }
     }

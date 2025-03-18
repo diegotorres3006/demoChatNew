@@ -1,5 +1,6 @@
 package com.example.demochat2;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpHeaders;
@@ -99,7 +100,7 @@ public class Utils {
                     return token;
                 });
     }
-
+    //Estática para instanciar directamente
     private static class TokenCache {
         private final String token;
         private final Instant expiration;
@@ -116,19 +117,21 @@ public class Utils {
         public Instant getExpiration() {
             return expiration;
         }
-    }
 
-    public class TokenResponse {
+    }
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class TokenResponse {
         @JsonProperty("access_token")
         private String accessToken;
 
         @JsonProperty("expires_in")
         private long expiresIn;
 
-        // Default constructor required for Jackson
+
+        // Constructor sin argumentos (requerido por Jackson)
         public TokenResponse() {}
 
-        // New constructor to parse JSON
+        // Constructor para parsear JSON
         public TokenResponse(String json) {
             try {
                 ObjectMapper mapper = new ObjectMapper();
@@ -147,7 +150,10 @@ public class Utils {
         public long getExpiresIn() {
             return expiresIn;
         }
+
+
     }
+
 
 
 }
