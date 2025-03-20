@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
 import co.ohelit.iaCore.infrastructure.config.AppConfig;
 
 import co.ohelit.iaCore.Utils;
@@ -24,7 +23,6 @@ public class RecipesPortAdapter implements RecipesPort {
     //Id del objeto recetas
     final int recipesObject = 17421;
 
-    private final WebClient.Builder webClientBuilder;
     private final Utils utils;
     private final AppConfig appConfig;
     //Para obtener token
@@ -33,8 +31,7 @@ public class RecipesPortAdapter implements RecipesPort {
     private final String quysApiFetchUrl;
 
     @Autowired
-    public RecipesPortAdapter(WebClient.Builder webClientBuilder, Utils utils, AppConfig appConfig) {
-        this.webClientBuilder = webClientBuilder;
+    public RecipesPortAdapter(Utils utils, AppConfig appConfig) {
         this.utils = utils;
         this.appConfig = appConfig;
 
@@ -60,7 +57,7 @@ public class RecipesPortAdapter implements RecipesPort {
     @Override
     public List<Recipe> getRecipes(String filterName, String filterValue, int pageSize) {
         String url = "https://quysqua.uat.ohelit.net/api/" + this.recipesObject + "/getalldata?WithRelations=false&page=1&size=" + pageSize + "&sort=1(asc)";
-        String token2 = utils.getToken(this.quysClientID, this.quysClientSecret, this.quysApiFetchUrl).block();
+        String token = utils.getToken(this.quysClientID, this.quysClientSecret, this.quysApiFetchUrl).block();
 
 
         // Construcción del parámetro en formato JSON si se especifica el filtro
@@ -74,7 +71,7 @@ public class RecipesPortAdapter implements RecipesPort {
                 url,
                 HttpMethod.GET,
                 body,
-                token2,
+                token,
                 "application/json",
                 null, // No hay parámetros
                 null  // No hay headers extra
@@ -111,12 +108,11 @@ public class RecipesPortAdapter implements RecipesPort {
         return rawItems.stream().map(item -> {
             Recipe recipe = new Recipe();
             // Cambiar la conversión del ID de Integer a Long
-            recipe.setId(((Integer) item.get(0)).longValue()); // Convertir Integer a Long de forma segura
-
-            recipe.setCode((String) item.get(1)); // Suponiendo que el segundo valor es el nombre
-            recipe.setConfiguration((String) item.get(2)); // El tercer valor parece ser una configuración de pasos
-            recipe.setDescription((String) item.get(3)); // Cuarto valor es la descripción
-            recipe.setAutomation((String) item.get(4)); // El quinto valor parece ser nulo o algún valor adicional (puedes omitir si no es necesario)
+            recipe.setId(((Integer) item.get(0)).longValue()); // ID: Convertir Integer a Long de forma segura
+            recipe.setCode((String) item.get(1)); // String nombre
+            recipe.setConfiguration((String) item.get(2)); // String configuración de pasos
+            recipe.setDescription((String) item.get(3)); // String descripción
+            recipe.setAutomation((String) item.get(4)); // String del crone
 
             return recipe;
         }).toList();

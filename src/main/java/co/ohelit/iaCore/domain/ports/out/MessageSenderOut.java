@@ -1,6 +1,6 @@
-package co.ohelit.iaCore.domain.ports;
+package co.ohelit.iaCore.domain.ports.out;
 
-public interface MessageSenderPort {
+public interface MessageSenderOut {
     void sendMessage(String recipient, String text, String messageId);
     void markAsRead(String messageId);
 }

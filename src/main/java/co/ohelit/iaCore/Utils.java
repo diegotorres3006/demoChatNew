@@ -3,6 +3,7 @@ package co.ohelit.iaCore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -27,6 +28,7 @@ public class Utils {
     private final Map<String, TokenCache> tokenCache = new ConcurrentHashMap<>();
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    @Autowired
     public Utils(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
     }

@@ -1,11 +1,22 @@
 package co.ohelit.iaCore.application.stepsStrategy;
 
+import co.ohelit.iaCore.application.services.MessengerService;
+import co.ohelit.iaCore.application.services.WhatsAppService;
+import co.ohelit.iaCore.domain.ports.in.MessageSenderIn;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component
 public class MessageStep implements Steps {
+
+    private final WhatsAppService whatsAppService;
+    private final MessengerService messengerService;
+
+    public MessageStep( WhatsAppService whatsAppService, MessengerService messengerService){
+        this.whatsAppService = whatsAppService;
+        this.messengerService = messengerService;
+    }
 
     @Override
     public void ejecutar(Map<String, Object> step) {
@@ -27,31 +38,15 @@ public class MessageStep implements Steps {
             System.out.println("No debo guardar nadota");
         }
 
+        MessageSenderIn messageSenderIn;
+
+
+        messageSenderIn = this.messengerService;
+
+
+        messageSenderIn.sendMessage("573228656468", (String) parameters.get("message"), "123");
+
+
     }
-
-    /*public void entrarPrimerElemento ( String yaml ){
-
-        try {
-            List<Map<String, Object>> recipeJson = yamlService.yamlToJson(yaml);
-
-            // Acceder al primer elemento de la lista
-            Map<String, Object> firstItem = recipeJson.get(0);
-
-            // Acceder a la clave 'steps' en el primer elemento
-            Map<String, Object> steps = (Map<String, Object>) firstItem.get("steps");
-
-            // Acceder a 'name' dentro de 'steps'
-            String name = (String) steps.get("name");
-            System.out.println("steps.name: " + name);  // Debería imprimir: ENROLLMENT_ID
-
-            // Acceder a 'parameters' dentro de 'steps' y luego a 'message'
-            Map<String, Object> parameters = (Map<String, Object>) steps.get("parameters");
-            String message = (String) parameters.get("message");
-            System.out.println("steps.parameters.message: " + message);
-
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
 
 }

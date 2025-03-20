@@ -1,6 +1,8 @@
 package co.ohelit.iaCore.infrastructure.controllers;
 
+import co.ohelit.iaCore.application.services.MessengerService;
 import co.ohelit.iaCore.application.services.RecipesService;
+import co.ohelit.iaCore.application.services.WhatsAppService;
 import co.ohelit.iaCore.application.services.YamlService;
 import co.ohelit.iaCore.application.stepsStrategy.ApiStep;
 import co.ohelit.iaCore.application.stepsStrategy.IaStep;
@@ -22,13 +24,17 @@ import java.util.Map;
 @RequestMapping("/api")
 public class RecipesController {
 
-    RecipesService recipesService;
-    YamlService yamlService;
+    private final RecipesService recipesService;
+    private final YamlService yamlService;
+    private final WhatsAppService whatsAppService;
+    private final MessengerService messengerService;
 
     @Autowired
-    public RecipesController(RecipesService recipesService, YamlService yamlService){
+    public RecipesController(RecipesService recipesService, YamlService yamlService, WhatsAppService whatsAppService, MessengerService messengerService){
         this.recipesService = recipesService;
         this.yamlService = yamlService;
+        this.whatsAppService = whatsAppService;
+        this.messengerService = messengerService;
     }
 
     @GetMapping("/prueba")
@@ -107,7 +113,7 @@ public class RecipesController {
                 "    nextStep: null");
 
         YamlService yamlService = new YamlService();
-        MessageStep messageStep = new MessageStep();
+        MessageStep messageStep = new MessageStep(this.whatsAppService, this.messengerService);
         IaStep iaStep = new IaStep();
         ApiStep apiStep = new ApiStep();
 

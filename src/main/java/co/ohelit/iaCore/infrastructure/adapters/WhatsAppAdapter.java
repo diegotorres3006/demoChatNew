@@ -2,7 +2,9 @@
 package co.ohelit.iaCore.infrastructure.adapters;
 
 import co.ohelit.iaCore.infrastructure.config.AppConfig;
-import co.ohelit.iaCore.domain.ports.MessageSenderPort;
+import co.ohelit.iaCore.domain.ports.out.MessageSenderOut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -10,8 +12,9 @@ import co.ohelit.iaCore.Utils;
 
 import java.util.Map;
 
+@Primary
 @Component
-public class WhatsAppAdapter implements MessageSenderPort {
+public class WhatsAppAdapter implements MessageSenderOut {
 
     private final String apiVersion;
     private final String businessPhone;
@@ -19,7 +22,7 @@ public class WhatsAppAdapter implements MessageSenderPort {
     private final WebClient webClient;
     private final Utils utils;
 
-
+    @Autowired
     public WhatsAppAdapter(AppConfig appConfig, Utils utils) {
         this.apiVersion = appConfig.getApiVersion();
         this.businessPhone = appConfig.getBusinessPhone();

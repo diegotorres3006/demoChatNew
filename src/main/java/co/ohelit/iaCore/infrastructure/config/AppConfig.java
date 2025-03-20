@@ -51,14 +51,4 @@ public class AppConfig {
     public String getQuysApiFetchUrl() { return quysApiFetchUrl; }
     public int getServerPort() { return serverPort; }
 
-    @Bean
-    public RecipesService recipesService(RecipesPortAdapter recipesPortAdapter){
-        return new RecipesService(recipesPortAdapter);
-    }
-
-    @Bean
-    public YamlService yamlService(){
-        return new YamlService();
-    }
-
 }
