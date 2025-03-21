@@ -1,5 +1,6 @@
 package co.ohelit.iaCore.infrastructure.controllers;
 
+import co.ohelit.iaCore.application.repositories.RecipesRepository;
 import co.ohelit.iaCore.application.services.MessengerService;
 import co.ohelit.iaCore.application.services.RecipesService;
 import co.ohelit.iaCore.application.services.WhatsAppService;
@@ -28,13 +29,16 @@ public class RecipesController {
     private final YamlService yamlService;
     private final WhatsAppService whatsAppService;
     private final MessengerService messengerService;
+    private final RecipesRepository recipesRepository;
 
     @Autowired
-    public RecipesController(RecipesService recipesService, YamlService yamlService, WhatsAppService whatsAppService, MessengerService messengerService){
+    public RecipesController(RecipesService recipesService, YamlService yamlService, WhatsAppService whatsAppService,
+                             MessengerService messengerService, RecipesRepository recipesRepository){
         this.recipesService = recipesService;
         this.yamlService = yamlService;
         this.whatsAppService = whatsAppService;
         this.messengerService = messengerService;
+        this.recipesRepository = recipesRepository;
     }
 
     @GetMapping("/prueba")
@@ -134,8 +138,17 @@ public class RecipesController {
 
     @GetMapping("/recipes/{id}")
     public ResponseEntity<List<Recipe>> getRecipe(@PathVariable String id){
-        List<Recipe> recipe = recipesService.getRecipes("id", id, 1);
+        List<Recipe> recipe = recipesService.getRecipes("id", id, 10);
         return new ResponseEntity<>(recipe, HttpStatus.OK);
+    }
+
+    @GetMapping("agregar/{id}")
+    public boolean agregar(@PathVariable Long id){
+        return recipesRepository.searchRecipe(id);
+    }
+    @GetMapping("agregar")
+    public String agregar(){
+        return recipesRepository.generateMenu();
     }
 
     @GetMapping("/json")

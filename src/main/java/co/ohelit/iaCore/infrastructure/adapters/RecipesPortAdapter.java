@@ -2,6 +2,7 @@ package co.ohelit.iaCore.infrastructure.adapters;
 
 import co.ohelit.iaCore.domain.models.Recipe;
 import co.ohelit.iaCore.domain.ports.out.RecipesPort;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,7 @@ import co.ohelit.iaCore.infrastructure.config.AppConfig;
 import co.ohelit.iaCore.Utils;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,43 +58,45 @@ public class RecipesPortAdapter implements RecipesPort {
 
     @Override
     public List<Recipe> getRecipes(String filterName, String filterValue, int pageSize) {
-        String url = "https://quysqua.uat.ohelit.net/api/" + this.recipesObject + "/getalldata?WithRelations=false&page=1&size=" + pageSize + "&sort=1(asc)";
-        String token = utils.getToken(this.quysClientID, this.quysClientSecret, this.quysApiFetchUrl).block();
-
+        String url = "https://quysqua.uat.ohelit.net/api/" + this.recipesObject +
+                "/getalldata?WithRelations=false&page=1&size=" + pageSize + "&sort=1(asc)";
+        String token2 = utils.getToken(this.quysClientID, this.quysClientSecret, this.quysApiFetchUrl).block();
 
         // Construcción del parámetro en formato JSON si se especifica el filtro
-        String body = null;
+        Map<String, String> params = new HashMap<>();
         if (filterName != null && filterValue != null) {
-            body = "{\"data\":{\"" + filterName + "\":" + filterValue + "}}";
+            String filterJson = "{\"data\":{\"" + filterName + "\":" + filterValue + "}}";
+            params.put("param", filterJson);
         }
 
-        // Llamada a `makeRequest`
+        // Llamada a makeRequest pasando el filtro en params (y body nulo para GET)
         Mono<ResponseEntity<String>> responseMono = utils.makeRequest(
                 url,
                 HttpMethod.GET,
-                body,
-                token,
+                null, // body es null para GET
+                token2,
                 "application/json",
-                null, // No hay parámetros
-                null  // No hay headers extra
+                params,   // Enviamos el filtro como parámetro
+                null      // No hay headers extra
         );
 
         try {
-            // bloquear la ejecución hasta recibir el resultado
+            // Bloquear la ejecución hasta recibir el resultado
             ResponseEntity<String> responseEntity = responseMono.block();
-
-            if (responseEntity == null || responseEntity.getBody() == null) {
-                System.out.println("Error: Respuesta vacía o nula");
-                return List.of();
-            }
 
             // Parsear la respuesta JSON
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(responseEntity.getBody());
             JsonNode dataNode = rootNode.path("data"); // Obtener el campo "data"
 
+            if (dataNode.isEmpty()) {
+                System.out.println("Error: Respuesta vacía o nula");
+                return List.of();
+            }
+
             // Convertir el campo "data" a una lista de listas (por cada receta)
-            List<List<Object>> rawItems = objectMapper.readValue(dataNode.toString(), new TypeReference<List<List<Object>>>() {});
+            List<List<Object>> rawItems = objectMapper.readValue(dataNode.toString(),
+                    new TypeReference<List<List<Object>>>() {});
 
             // Mapeamos cada item (que es un array) a un objeto Recipe
             return mapRawItemsToRecipes(rawItems);
