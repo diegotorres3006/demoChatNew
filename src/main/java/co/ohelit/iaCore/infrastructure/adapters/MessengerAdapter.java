@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessengerAdapter implements MessageSenderOut {
 
-    @Autowired
+
     public MessengerAdapter(){
 
     }

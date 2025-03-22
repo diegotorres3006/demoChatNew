@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import co.ohelit.iaCore.Utils;
+import co.ohelit.iaCore.utils.WebClientService;
+import co.ohelit.iaCore.utils.JsonUtils;
 
 import java.util.Map;
 
@@ -20,15 +21,17 @@ public class WhatsAppAdapter implements MessageSenderOut {
     private final String businessPhone;
     private final String apiToken;
     private final WebClient webClient;
-    private final Utils utils;
+    private final WebClientService webClientService;
+    private final JsonUtils jsonUtils;
 
     @Autowired
-    public WhatsAppAdapter(AppConfig appConfig, Utils utils) {
+    public WhatsAppAdapter(AppConfig appConfig, WebClientService webClientService, JsonUtils jsonUtils) {
         this.apiVersion = appConfig.getApiVersion();
         this.businessPhone = appConfig.getBusinessPhone();
         this.apiToken = appConfig.getApiToken();
         this.webClient = WebClient.create("https://graph.facebook.com");
-        this.utils = utils;
+        this.webClientService = webClientService;
+        this.jsonUtils = jsonUtils;
     }
 
     @Override
@@ -42,10 +45,10 @@ public class WhatsAppAdapter implements MessageSenderOut {
                 "context", Map.of("message_id", messageId)
         );
 
-        utils.makeRequest(
+        webClientService.makeRequest(
                 url,
                 HttpMethod.POST,
-                Utils.toJson(body),
+                JsonUtils.toJson(body),
                 apiToken,
                 "application/json",
                 null,
@@ -64,10 +67,10 @@ public class WhatsAppAdapter implements MessageSenderOut {
                 "message_id", messageId
         );
 
-        utils.makeRequest(
+        webClientService.makeRequest(
                 url,
                 HttpMethod.POST,
-                Utils.toJson(body),
+                JsonUtils.toJson(body),
                 apiToken,
                 "application/json",
                 null,

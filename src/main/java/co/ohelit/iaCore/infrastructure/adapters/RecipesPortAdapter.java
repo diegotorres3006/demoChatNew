@@ -12,7 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import co.ohelit.iaCore.infrastructure.config.AppConfig;
 
-import co.ohelit.iaCore.Utils;
+import co.ohelit.iaCore.utils.TokenService;
+import co.ohelit.iaCore.utils.WebClientService;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
@@ -25,7 +26,8 @@ public class RecipesPortAdapter implements RecipesPort {
     //Id del objeto recetas
     final int recipesObject = 17421;
 
-    private final Utils utils;
+    private final TokenService tokenService;
+    private final WebClientService webClientService;
     private final AppConfig appConfig;
     //Para obtener token
     private final String quysClientID;
@@ -33,8 +35,9 @@ public class RecipesPortAdapter implements RecipesPort {
     private final String quysApiFetchUrl;
 
     @Autowired
-    public RecipesPortAdapter(Utils utils, AppConfig appConfig) {
-        this.utils = utils;
+    public RecipesPortAdapter(TokenService tokenService, AppConfig appConfig, WebClientService webClientService) {
+        this.tokenService = tokenService;
+        this.webClientService = webClientService;
         this.appConfig = appConfig;
 
         this.quysClientID = appConfig.getQuysClientId();
@@ -60,7 +63,7 @@ public class RecipesPortAdapter implements RecipesPort {
     public List<Recipe> getRecipes(String filterName, String filterValue, int pageSize) {
         String url = "https://quysqua.uat.ohelit.net/api/" + this.recipesObject +
                 "/getalldata?WithRelations=false&page=1&size=" + pageSize + "&sort=1(asc)";
-        String token2 = utils.getToken(this.quysClientID, this.quysClientSecret, this.quysApiFetchUrl).block();
+        String token2 =  tokenService.getToken(this.quysClientID, this.quysClientSecret, this.quysApiFetchUrl).block();
 
         // Construcción del parámetro en formato JSON si se especifica el filtro
         Map<String, String> params = new HashMap<>();
@@ -70,7 +73,7 @@ public class RecipesPortAdapter implements RecipesPort {
         }
 
         // Llamada a makeRequest pasando el filtro en params (y body nulo para GET)
-        Mono<ResponseEntity<String>> responseMono = utils.makeRequest(
+        Mono<ResponseEntity<String>> responseMono = webClientService.makeRequest(
                 url,
                 HttpMethod.GET,
                 null, // body es null para GET
