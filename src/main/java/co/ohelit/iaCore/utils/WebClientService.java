@@ -1,11 +1,16 @@
 package co.ohelit.iaCore.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -53,4 +58,38 @@ public class WebClientService {
                     return Mono.just(ResponseEntity.internalServerError().body("Error en la petición"));
                 });
     }
+
+    public Map<String, String> buildFilterParams(String filterName, String filterValue) {
+        Map<String, String> params = new HashMap<>();
+        if (filterName != null && filterValue != null) {
+            String filterJson = "{\"data\":{\"" + filterName + "\":\"" + filterValue + "\"}}";
+            params.put("param", filterJson);
+        }
+        return params; // Mapa vacío si no hay filtro
+    }
+
+    public Map<String, String> buildFilterParams(List<String> filterNames, List<String> filterValues) {
+        Map<String, String> params = new HashMap<>();
+
+        if (filterNames != null && filterValues != null && filterNames.size() == filterValues.size()) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode filterJson = objectMapper.createObjectNode();
+            ObjectNode dataNode = filterJson.putObject("data");
+
+            for (int i = 0; i < filterNames.size(); i++) {
+                dataNode.put(filterNames.get(i), filterValues.get(i));
+            }
+
+            try {
+                params.put("param", objectMapper.writeValueAsString(filterJson));
+            } catch (JsonProcessingException e) {
+                System.err.println("Error construyendo JSON de filtros: " + e.getMessage());
+            }
+        }
+
+        return params;
+    }
+
+
+
 }

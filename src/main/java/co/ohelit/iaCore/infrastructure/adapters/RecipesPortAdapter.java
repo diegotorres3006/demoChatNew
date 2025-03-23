@@ -56,12 +56,9 @@ public class RecipesPortAdapter implements RecipesPort {
                 "/getalldata?WithRelations=false&page=1&size=" + pageSize + "&sort=1(asc)";
         String token =  quysUtils.getQuysToken();
 
-        // Construcción del parámetro en formato JSON si se especifica el filtro
-        Map<String, String> params = new HashMap<>();
-        if (filterName != null && filterValue != null) {
-            String filterJson = "{\"data\":{\"" + filterName + "\":" + filterValue + "}}";
-            params.put("param", filterJson);
-        }
+        // Gener filtro
+        Map<String, String> params = webClientService.buildFilterParams(filterName, filterValue);
+
 
         // Llamada a makeRequest pasando el filtro en params (y body nulo para GET)
         Mono<ResponseEntity<String>> responseMono = webClientService.makeRequest(
