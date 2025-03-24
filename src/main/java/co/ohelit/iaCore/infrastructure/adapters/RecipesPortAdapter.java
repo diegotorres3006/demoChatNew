@@ -9,13 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import co.ohelit.iaCore.infrastructure.config.AppConfig;
 
 import co.ohelit.iaCore.utils.QuysUtils;
 import co.ohelit.iaCore.utils.WebClientService;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

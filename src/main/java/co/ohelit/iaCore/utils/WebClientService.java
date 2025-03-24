@@ -90,6 +90,14 @@ public class WebClientService {
         return params;
     }
 
+    public HttpMethod buildMethod (String method){
+        return switch (method) {
+            case "GET" -> HttpMethod.GET;
+            case "POST" -> HttpMethod.POST;
+            default -> null;
+        };
+    }
+
 
 
 }

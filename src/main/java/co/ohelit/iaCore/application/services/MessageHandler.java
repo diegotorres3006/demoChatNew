@@ -26,7 +26,7 @@ public class MessageHandler {
             messageSenderOut.markAsRead(message.getId());
 
             this.whatsAppService.sendMessage(message.getFrom(), this.recipesRepository.generateMenu(), message.getId());
-            this.recipesRepository.searchRecipe(7L);
+            this.recipesRepository.iniciarReceta(this.recipesRepository.searchRecipe(1L));
         }
     }
 

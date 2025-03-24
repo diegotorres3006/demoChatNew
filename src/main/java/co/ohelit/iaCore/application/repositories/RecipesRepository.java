@@ -1,21 +1,26 @@
 package co.ohelit.iaCore.application.repositories;
 
 import co.ohelit.iaCore.application.services.RecipesService;
+import co.ohelit.iaCore.application.services.YamlService;
 import co.ohelit.iaCore.domain.models.Recipe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class RecipesRepository {
 
     private final RecipesService recipesService;
+    private final YamlService yamlService;
 
     @Autowired
-    public RecipesRepository(RecipesService recipesService){
+    public RecipesRepository(RecipesService recipesService, YamlService yamlService){
         this.recipesService = recipesService;
+        this.yamlService = yamlService;
     }
 
     /*Toda logica aqui*/
@@ -35,17 +40,54 @@ public class RecipesRepository {
         return sb.toString();
     }
 
-    public boolean searchRecipe(Long idRecipe){
-        boolean recipeExists = this.todasRecetas.stream().anyMatch(recipe -> recipe.getId().equals(idRecipe));
-        if (!recipeExists){
+    public Recipe searchRecipe(Long idRecipe){
+
+        Optional<Recipe> recipe = this.todasRecetas.stream()
+                .filter(rp -> rp.getId().equals(idRecipe))
+                .findFirst();
+
+        Recipe recipeExists = recipe.orElse(null);
+
+        if (recipeExists==null){
+            //Si la receta no se encontro, buscarla en quysqua
             List<Recipe> tempList = new ArrayList<>(this.recipesService.getRecipes("id", Long.toString(idRecipe), 1));
             if (!tempList.isEmpty()){
+                //Se agrega la receta al listado local
                 this.todasRecetas.addAll(tempList);
                 System.out.println("ENRTRÉ A AGREGAR");
-                this.todasRecetas.forEach(recipe -> System.out.println(recipe.getId() + " "+recipe.getCode()));
+                this.todasRecetas.forEach(rp -> System.out.println(rp.getId() + " "+rp.getCode()));
+                //Como ya se guardo la receta en el listado, vovler a llamar el metodo
+                //Esto entrara directamente al else y retorna la receta entera
+                return searchRecipe(idRecipe);
+            } else {
+                //Si no se encuentra la receta en quysqua, enviar null
+                return null;
             }
+        } else {
+            //Si la receta se encontro, retornarla
+            return recipe.get();
         }
-        return recipeExists;
+    }
+
+    public void iniciarReceta(Recipe recipe){
+        if (recipe!=null){
+            System.out.println("Iniciare la receta " + recipe.getId());
+            String steps = recipe.getConfiguration();
+            System.out.println("Encontre estos pasos: " + steps);
+
+            List<Map<String, Object>> stepsJson = this.yamlService.yamlToJson(steps);
+            Integer currentStep = 1;
+            while (currentStep != null){
+                System.out.println("Empezare el bucle while, paso actual: "+ currentStep);
+                Map<String, Object> step = (Map<String, Object>) this.recipesService.findStepByNumber(stepsJson, currentStep).get("steps");
+                System.out.println("Busque el paso " + currentStep+ " y encontre: "+ step);
+
+                currentStep = (Integer) step.get("nextStep");
+                System.out.println("Cambio de paso " + currentStep);
+
+            }
+
+        }
     }
 
 }

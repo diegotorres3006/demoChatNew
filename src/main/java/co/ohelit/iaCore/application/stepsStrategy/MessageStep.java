@@ -19,20 +19,38 @@ public class MessageStep implements Steps {
     }
 
     @Override
-    public void ejecutar(Map<String, Object> step) {
-        System.out.println("DESDE WHATSPAPP STEP: Ejecuto  await MessageHandler.useSendMessage(messageOrigin, paso.steps);");
+    public void ejecutar(Map<String, Object> steps) {
+        System.out.println("DESDE MESSAGE STEP:");
 
-        //String yaml = baseRecipe.getConfiguration();
-        //System.out.println("yaml base de getConfigutaion " + yaml);
+        /*Este paso debe extraer información del step para enviar un mensaje por algún medio
+        ya sea WhatsApp u otro
 
-        Map<String, Object> paso = (Map<String, Object>) step.get("steps");
-        System.out.println(paso);
+        A continuación se explican todos los atributos de un paso:
+        name: ENROLLMENT_ID
+        type: WHATSAPP_MESSAGE
+        saveUserResponse: true
+        variableNumber: 1
+        expectedDataType: number
+        parameters:
+            message: "mensaje"
+        stepNumber: 1
+        nextStep: 2
+        */
 
-        Map<String, Object> parameters = (Map<String, Object>) paso.get("parameters");
-        System.out.println("Debo ir al api wstp y enviar: "+parameters.get("message"));
-        //entrarPrimerElemento(yaml);
+        //Obtener step
+        Map<String, Object> step = (Map<String, Object>) steps.get("steps");
 
-        if(paso.get("variableNumber")!=null){
+        Integer variableNumber = (Integer) step.get("variableNumber");
+        String dataType = (String) step.get("expectedDataType");
+        Integer nextStep = (Integer) step.get("nextStep");
+
+        Map<String, Object> parameters = (Map<String, Object>) step.get("parameters");
+        String message = (String) parameters.get("message");
+
+
+        System.out.println(variableNumber +" "+ dataType +" "+ nextStep +" "+ message);
+
+        if(variableNumber != null){
             System.out.println("Se supone que tengo que guardar la respuesta del usuario");
         } else {
             System.out.println("No debo guardar nadota");
@@ -41,11 +59,10 @@ public class MessageStep implements Steps {
         MessageSenderIn messageSenderIn;
 
 
-        messageSenderIn = this.messengerService;
+        messageSenderIn = this.whatsAppService;
 
 
-        messageSenderIn.sendMessage("573228656468", (String) parameters.get("message"), "123");
-
+        messageSenderIn.sendMessage("573228656468", message, "123");
 
     }
 
