@@ -22,8 +22,8 @@ public class ApiStep implements Steps {
     }
 
     @Override
-    public void ejecutar(Map<String, Object> steps) {
-        System.out.println("DESDE API STEP:");
+    public void ejecutar(Map<String, Object> step) {
+        System.out.println("DESDE API STEP: " + step);
 
         /*Este paso debe extraer información del step para hacer peticiones a APIS exteneras
         sea quysqua u otra
@@ -43,8 +43,6 @@ public class ApiStep implements Steps {
         nextStep: 3
         */
 
-        //Obtener step
-        Map<String, Object> step = (Map<String, Object>) steps.get("steps");
 
         Integer variableNumber = (Integer) step.get("variableNumber");
         Integer nextStep = (Integer) step.get("nextStep");
@@ -53,10 +51,10 @@ public class ApiStep implements Steps {
         String method = (String) parameters.get("method");
         String apiLink = (String) parameters.get("apiLink");
 
-        Map<String, String> filter = (Map<String, String>) parameters.get("filter");
+        Map<String, Object> filter = (Map<String, Object>) parameters.get("filter");
         String filterName = (String) filter.get("filterName");
         String filterId = (String) filter.get("filterId");
-        Integer localFilter = Integer.valueOf(filter.get("localVariableFilter"));
+        Integer localFilter = (Integer)filter.get("localVariableFilter");
 
         System.out.println(variableNumber +" "+ nextStep +" "+ method +" "+ apiLink +" "+ filter);
 
