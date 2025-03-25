@@ -1,5 +1,7 @@
 package co.ohelit.iaCore.domain.ports.in;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface MessageSenderIn {
-    void sendMessage(String recipient, String text, String messageId);
+    CompletableFuture<String> sendMessage(String recipient, String text, String messageId, boolean wait);
 }

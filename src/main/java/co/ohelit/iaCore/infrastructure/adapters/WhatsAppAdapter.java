@@ -6,12 +6,14 @@ import co.ohelit.iaCore.domain.ports.out.MessageSenderOut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import co.ohelit.iaCore.utils.WebClientService;
 import co.ohelit.iaCore.utils.JsonUtils;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Primary
 @Component
@@ -34,6 +36,7 @@ public class WhatsAppAdapter implements MessageSenderOut {
         this.jsonUtils = jsonUtils;
     }
 
+    @Async
     @Override
     public void sendMessage(String recipient, String text, String messageId) {
         String url = String.format("https://graph.facebook.com/%s/%s/messages", apiVersion, businessPhone);
@@ -57,6 +60,7 @@ public class WhatsAppAdapter implements MessageSenderOut {
             System.out.println("Respuesta de WhatsApp: " + response.getBody());
         });
     }
+
     @Override
     public void markAsRead(String messageId) {
         String url = String.format("https://graph.facebook.com/%s/%s/messages", apiVersion, businessPhone);

@@ -1,10 +1,7 @@
 package co.ohelit.iaCore.infrastructure.controllers;
 
 import co.ohelit.iaCore.application.repositories.RecipesRepository;
-import co.ohelit.iaCore.application.services.MessengerService;
-import co.ohelit.iaCore.application.services.RecipesService;
-import co.ohelit.iaCore.application.services.WhatsAppService;
-import co.ohelit.iaCore.application.services.YamlService;
+import co.ohelit.iaCore.application.services.*;
 import co.ohelit.iaCore.application.stepsStrategy.ApiStep;
 import co.ohelit.iaCore.application.stepsStrategy.IaStep;
 import co.ohelit.iaCore.application.stepsStrategy.MessageStep;
@@ -34,11 +31,12 @@ public class RecipesController {
     private final RecipesRepository recipesRepository;
     private final WebClientService webClientService;
     private final QuysUtils quysUtils;
+    private final OpenAiChatService openAiChatService;
 
     @Autowired
     public RecipesController(RecipesService recipesService, YamlService yamlService, WhatsAppService whatsAppService,
                              MessengerService messengerService, RecipesRepository recipesRepository,
-                             WebClientService webClientService, QuysUtils quysUtils){
+                             WebClientService webClientService, QuysUtils quysUtils, OpenAiChatService openAiChatService){
         this.recipesService = recipesService;
         this.yamlService = yamlService;
         this.whatsAppService = whatsAppService;
@@ -46,6 +44,7 @@ public class RecipesController {
         this.recipesRepository = recipesRepository;
         this.webClientService = webClientService;
         this.quysUtils = quysUtils;
+        this.openAiChatService = openAiChatService;
     }
 
     @GetMapping("/recipes")
@@ -115,7 +114,7 @@ public class RecipesController {
 
         YamlService yamlService = new YamlService();
         MessageStep messageStep = new MessageStep(this.whatsAppService, this.messengerService);
-        IaStep iaStep = new IaStep();
+        IaStep iaStep = new IaStep(this.openAiChatService);
         ApiStep apiStep = new ApiStep(this.webClientService, this.quysUtils);
 
 
