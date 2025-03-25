@@ -8,8 +8,8 @@ import java.util.Map;
 @Component
 public class IaStep implements Steps {
     @Override
-    public void ejecutar(Map<String, Object> steps) {
-        System.out.println("DESDE IA STEP:");
+    public void ejecutar(Map<String, Object> step) {
+        System.out.println("DESDE IA STEP: " + step);
 
         /*Este paso debe extraer información del step para enviar un prompt a una IA
         ya sea GPT, DeepSeek u otro
@@ -26,9 +26,6 @@ public class IaStep implements Steps {
         stepNumber: 3
         nextStep: 4
         */
-
-        //Obtener step
-        Map<String, Object> step = (Map<String, Object>) steps.get("steps");
 
         Integer variableNumber = (Integer) step.get("variableNumber");
         String model = (String) step.get("model");

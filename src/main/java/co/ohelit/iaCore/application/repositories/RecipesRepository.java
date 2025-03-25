@@ -2,6 +2,10 @@ package co.ohelit.iaCore.application.repositories;
 
 import co.ohelit.iaCore.application.services.RecipesService;
 import co.ohelit.iaCore.application.services.YamlService;
+import co.ohelit.iaCore.application.stepsStrategy.ApiStep;
+import co.ohelit.iaCore.application.stepsStrategy.IaStep;
+import co.ohelit.iaCore.application.stepsStrategy.MessageStep;
+import co.ohelit.iaCore.application.stepsStrategy.Steps;
 import co.ohelit.iaCore.domain.models.Recipe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,11 +20,19 @@ public class RecipesRepository {
 
     private final RecipesService recipesService;
     private final YamlService yamlService;
+    private final MessageStep messageStep;
+    private final IaStep iaStep;
+    private final ApiStep apiStep;
+    Steps stepsInterface;
 
     @Autowired
-    public RecipesRepository(RecipesService recipesService, YamlService yamlService){
+    public RecipesRepository(RecipesService recipesService, YamlService yamlService,
+                             MessageStep messageStep, IaStep iaStep, ApiStep apiStep){
         this.recipesService = recipesService;
         this.yamlService = yamlService;
+        this.messageStep = messageStep;
+        this.iaStep = iaStep;
+        this.apiStep = apiStep;
     }
 
     /*Toda logica aqui*/
@@ -82,6 +94,28 @@ public class RecipesRepository {
                 Map<String, Object> step = (Map<String, Object>) this.recipesService.findStepByNumber(stepsJson, currentStep).get("steps");
                 System.out.println("Busque el paso " + currentStep+ " y encontre: "+ step);
 
+                String type = (String) step.get("type");
+
+                switch (type){
+                    case "WHATSAPP_MESSAGE":
+                        System.out.println("Entré el switch de tipo: " + type);
+                        stepsInterface = this.messageStep;
+                        stepsInterface.ejecutar(step);
+                        break;
+                    case "API":
+                        System.out.println("Entré el switch de tipo: " + type);
+                        stepsInterface = this.apiStep;
+                        stepsInterface.ejecutar(step);
+                        break;
+                    case "IA":
+                        System.out.println("Entré el switch de tipo: " + type);
+                        stepsInterface = this.iaStep;
+                        stepsInterface.ejecutar(step);
+                        break;
+                    default: break;
+                }
+
+                //Actualizacion del paso actual
                 currentStep = (Integer) step.get("nextStep");
                 System.out.println("Cambio de paso " + currentStep);
 

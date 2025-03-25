@@ -19,8 +19,8 @@ public class MessageStep implements Steps {
     }
 
     @Override
-    public void ejecutar(Map<String, Object> steps) {
-        System.out.println("DESDE MESSAGE STEP:");
+    public void ejecutar(Map<String, Object> step) {
+        System.out.println("DESDE MESSAGE STEP: " + step);
 
         /*Este paso debe extraer información del step para enviar un mensaje por algún medio
         ya sea WhatsApp u otro
@@ -36,9 +36,6 @@ public class MessageStep implements Steps {
         stepNumber: 1
         nextStep: 2
         */
-
-        //Obtener step
-        Map<String, Object> step = (Map<String, Object>) steps.get("steps");
 
         Integer variableNumber = (Integer) step.get("variableNumber");
         String dataType = (String) step.get("expectedDataType");
@@ -62,7 +59,7 @@ public class MessageStep implements Steps {
         messageSenderIn = this.whatsAppService;
 
 
-        messageSenderIn.sendMessage("573228656468", message, "123");
+        //messageSenderIn.sendMessage("573228656468", message, "123");
 
     }
 
