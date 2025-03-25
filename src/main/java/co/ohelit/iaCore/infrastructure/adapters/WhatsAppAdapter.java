@@ -47,7 +47,7 @@ public class WhatsAppAdapter implements MessageSenderOut {
 
         webClientService.makeRequest(
                 url,
-                HttpMethod.POST,
+                webClientService.buildMethod("POST"),
                 JsonUtils.toJson(body),
                 apiToken,
                 "application/json",
@@ -69,7 +69,7 @@ public class WhatsAppAdapter implements MessageSenderOut {
 
         webClientService.makeRequest(
                 url,
-                HttpMethod.POST,
+                webClientService.buildMethod("POST"),
                 JsonUtils.toJson(body),
                 apiToken,
                 "application/json",
