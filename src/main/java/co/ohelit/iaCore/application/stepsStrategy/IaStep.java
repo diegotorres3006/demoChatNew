@@ -17,7 +17,7 @@ public class IaStep implements Steps {
     }
 
     @Override
-    public void ejecutar(Map<String, Object> step) {
+    public void ejecutar(Map<String, Object> step, String origin) {
         System.out.println("DESDE IA STEP: " + step);
 
         /*Este paso debe extraer información del step para enviar un prompt a una IA

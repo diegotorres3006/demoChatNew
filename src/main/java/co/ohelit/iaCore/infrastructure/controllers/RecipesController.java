@@ -32,6 +32,7 @@ public class RecipesController {
     private final WebClientService webClientService;
     private final QuysUtils quysUtils;
     private final OpenAiChatService openAiChatService;
+    private final String telQuemado = "573228656468";
 
     @Autowired
     public RecipesController(RecipesService recipesService, YamlService yamlService, WhatsAppService whatsAppService,
@@ -120,15 +121,15 @@ public class RecipesController {
 
 
         List<Map<String, Object>> recipe = yamlService.yamlToJson(miReceta.getConfiguration());
-        messageStep.ejecutar(recipesService.findStepByNumber(recipe, 1));
-        apiStep.ejecutar(recipesService.findStepByNumber(recipe, 2));
-        iaStep.ejecutar(recipesService.findStepByNumber(recipe, 3));
+        messageStep.ejecutar(recipesService.findStepByNumber(recipe, 1), telQuemado);
+        apiStep.ejecutar(recipesService.findStepByNumber(recipe, 2), telQuemado);
+        iaStep.ejecutar(recipesService.findStepByNumber(recipe, 3), telQuemado);
 
     }
 
     @GetMapping("/ejecutar/{id}")
     public void ejecutar(@PathVariable Long id){
-        this.recipesRepository.iniciarReceta(this.recipesRepository.searchRecipe(id));
+        this.recipesRepository.iniciarReceta(this.recipesRepository.searchRecipe(id), telQuemado);
     }
 
     @GetMapping("/json")

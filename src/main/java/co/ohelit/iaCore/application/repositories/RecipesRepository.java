@@ -1,6 +1,7 @@
 package co.ohelit.iaCore.application.repositories;
 
 import co.ohelit.iaCore.application.services.RecipesService;
+import co.ohelit.iaCore.application.services.WhatsAppService;
 import co.ohelit.iaCore.application.services.YamlService;
 import co.ohelit.iaCore.application.stepsStrategy.ApiStep;
 import co.ohelit.iaCore.application.stepsStrategy.IaStep;
@@ -81,7 +82,7 @@ public class RecipesRepository {
         }
     }
 
-    public void iniciarReceta(Recipe recipe){
+    public void iniciarReceta(Recipe recipe, String origin){
         if (recipe!=null){
             System.out.println("Iniciare la receta " + recipe.getId());
             String steps = recipe.getConfiguration();
@@ -89,6 +90,7 @@ public class RecipesRepository {
 
             List<Map<String, Object>> stepsJson = this.yamlService.yamlToJson(steps);
             Integer currentStep = 1;
+
             while (currentStep != null){
                 System.out.println("Empezare el bucle while, paso actual: "+ currentStep);
                 Map<String, Object> step = (Map<String, Object>) this.recipesService.findStepByNumber(stepsJson, currentStep).get("steps");
@@ -98,19 +100,16 @@ public class RecipesRepository {
 
                 switch (type){
                     case "WHATSAPP_MESSAGE":
-                        System.out.println("Entré el switch de tipo: " + type);
                         stepsInterface = this.messageStep;
-                        stepsInterface.ejecutar(step);
+                        stepsInterface.ejecutar(step, origin);
                         break;
                     case "API":
-                        System.out.println("Entré el switch de tipo: " + type);
                         stepsInterface = this.apiStep;
-                        stepsInterface.ejecutar(step);
+                        stepsInterface.ejecutar(step, origin);
                         break;
                     case "IA":
-                        System.out.println("Entré el switch de tipo: " + type);
                         stepsInterface = this.iaStep;
-                        stepsInterface.ejecutar(step);
+                        stepsInterface.ejecutar(step, origin);
                         break;
                     default: break;
                 }
@@ -122,10 +121,6 @@ public class RecipesRepository {
             }
 
         }
-    }
-
-    public void sendMenu(){
-
     }
 
 }

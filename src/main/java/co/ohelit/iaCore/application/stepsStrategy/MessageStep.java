@@ -6,6 +6,7 @@ import co.ohelit.iaCore.domain.ports.in.MessageSenderIn;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class MessageStep implements Steps {
@@ -19,7 +20,7 @@ public class MessageStep implements Steps {
     }
 
     @Override
-    public void ejecutar(Map<String, Object> step) {
+    public void ejecutar(Map<String, Object> step, String origin) {
         System.out.println("DESDE MESSAGE STEP: " + step);
 
         /*Este paso debe extraer información del step para enviar un mensaje por algún medio
@@ -44,22 +45,22 @@ public class MessageStep implements Steps {
         Map<String, Object> parameters = (Map<String, Object>) step.get("parameters");
         String message = (String) parameters.get("message");
 
-
         System.out.println(variableNumber +" "+ dataType +" "+ nextStep +" "+ message);
+
+        MessageSenderIn messageSenderIn;
+        messageSenderIn = this.whatsAppService;
 
         if(variableNumber != null){
             System.out.println("Se supone que tengo que guardar la respuesta del usuario");
+            CompletableFuture<String> promesa = messageSenderIn.sendMessage(origin, message, "123", true);
+            promesa.join();
+
+            //messageSenderIn.sendMessage("573203298262", message, "321", true);
+            //messageSenderIn.sendMessage("573014507055", message, "321", true);
         } else {
             System.out.println("No debo guardar nadota");
+            messageSenderIn.sendMessage(origin, message, "123", false);
         }
-
-        MessageSenderIn messageSenderIn;
-
-        messageSenderIn = this.whatsAppService;
-
-        System.out.println(messageSenderIn.sendMessage("573228656468", message, "123", true));
-        //messageSenderIn.sendMessage("573203298262", message, "321", true);
-        //messageSenderIn.sendMessage("573014507055", message, "321", true);
 
     }
 

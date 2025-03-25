@@ -26,8 +26,8 @@ public class MessageHandler {
 
     public void handleIncomingMessage(Message message) {
         if (message != null && "text".equals(message.getType())) {
-            String response = "Echo: " + message.getText().getBody();
-            messageSenderOut.sendMessage(message.getFrom(), response, message.getId());
+            //String response = "Echo: " + message.getText().getBody();
+            //messageSenderOut.sendMessage(message.getFrom(), response, message.getId());
             messageSenderOut.markAsRead(message.getId());
 
             // Buscar y completar la respuesta pendiente
@@ -35,11 +35,20 @@ public class MessageHandler {
             if (futureResponse != null) {
                 System.out.println("Completando promesa");
                 futureResponse.complete(message.getText().getBody());
-                //this.recipesRepository.iniciarReceta(this.recipesRepository.searchRecipe(1L));
             } else if ("hola".equalsIgnoreCase(message.getText().getBody())){
-                this.whatsAppService.sendMessage(message.getFrom(), this.recipesRepository.generateMenu(), message.getId(), true);
+                CompletableFuture<String> promesa = this.whatsAppService.sendMessage(message.getFrom(), this.recipesRepository.generateMenu(), message.getId(), true);
+                promesa.join();
+                try{
+                    Long idReceta = Long.valueOf(promesa.join());
+                    this.recipesRepository.iniciarReceta(this.recipesRepository.searchRecipe(idReceta), message.getFrom());
+                } catch (NumberFormatException e) {
+                    this.whatsAppService.sendMessage(message.getFrom(), "Se espera un número por respuesta\nVuelva a empezar con un 'hola'", message.getId(), false);
+                }
+
+
+                System.out.printf(promesa.join());
             }else {
-                this.whatsAppService.sendMessage(message.getFrom(), "No estoy en modo receta", message.getId(), false);
+                System.out.println("no está en medio de una receta");
             }
         }
     }
