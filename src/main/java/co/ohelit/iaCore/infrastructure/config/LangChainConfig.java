@@ -10,18 +10,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import co.ohelit.iaCore.infrastructure.config.AppConfig;
 
-@Configuration
+
 public class LangChainConfig {
+private final String chatGptApiKey;
 
-    private final String chatGptApiKey;
-
-    public LangChainConfig( AppConfig appConfig) {
-        this.chatGptApiKey = appConfig.getChatGptApiKey();
-
-    }
+public LangChainConfig(AppConfig appConfig) {
+    this.chatGptApiKey = appConfig.getChatGptApiKey();
+}
 
 
-    @Bean(name = "openAiChatModel")
+@Bean(name = "openAiChatModel")
     public ChatLanguageModel openAiChatModel() {
         JdkHttpClientBuilder jdkHttpClientBuilder = JdkHttpClient.builder();
         return OpenAiChatModel.builder()
