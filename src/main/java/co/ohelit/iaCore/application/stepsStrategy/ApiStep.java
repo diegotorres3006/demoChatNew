@@ -22,7 +22,7 @@ public class ApiStep implements Steps {
     }
 
     @Override
-    public void ejecutar(Map<String, Object> step) {
+    public void ejecutar(Map<String, Object> step, String origin) {
         System.out.println("DESDE API STEP: " + step);
 
         /*Este paso debe extraer información del step para hacer peticiones a APIS exteneras

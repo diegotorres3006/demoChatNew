@@ -32,7 +32,7 @@ public class WhatsAppService implements MessageSenderIn {
         } else {
             this.whatsAppAdapter.sendMessage(recipient, text, messageId);
             return null;
-        }
+        }   
     }
 
 }
