@@ -1,4 +1,4 @@
-package co.ohelit.iaCore.application.services;
+package co.ohelit.iaCore.infrastructure.controllers;
 
 import co.ohelit.iaCore.infrastructure.adapters.OllamaAssistant;
 import co.ohelit.iaCore.infrastructure.adapters.OpenAiAssistant;

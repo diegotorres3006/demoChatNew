@@ -1,5 +1,7 @@
 package co.ohelit.iaCore.application.stepsStrategy;
 
+import co.ohelit.iaCore.application.services.OpenAiChatService;
+import co.ohelit.iaCore.infrastructure.adapters.OpenAiAssistant;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -7,6 +9,13 @@ import java.util.Map;
 
 @Component
 public class IaStep implements Steps {
+
+    private final OpenAiChatService openAiChatService;
+
+    public IaStep(OpenAiChatService openAiChatService){
+        this.openAiChatService = openAiChatService;
+    }
+
     @Override
     public void ejecutar(Map<String, Object> step) {
         System.out.println("DESDE IA STEP: " + step);
@@ -37,6 +46,8 @@ public class IaStep implements Steps {
 
 
         System.out.println(variableNumber +" "+ model +" "+ nextStep +" "+ prompt +" "+ context);
+
+        System.out.println(this.openAiChatService.chat(prompt));
 
 
         if(variableNumber != null){

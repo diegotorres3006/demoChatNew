@@ -19,7 +19,7 @@ public LangChainConfig(AppConfig appConfig) {
 }
 
 
-@Bean(name = "openAiChatModel")
+    @Bean(name = "openAiChatModel")
     public ChatLanguageModel openAiChatModel() {
         JdkHttpClientBuilder jdkHttpClientBuilder = JdkHttpClient.builder();
         return OpenAiChatModel.builder()

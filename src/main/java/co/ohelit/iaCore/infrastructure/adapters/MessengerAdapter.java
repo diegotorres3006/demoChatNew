@@ -1,7 +1,8 @@
 package co.ohelit.iaCore.infrastructure.adapters;
 import co.ohelit.iaCore.domain.ports.out.MessageSenderOut;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class MessengerAdapter implements MessageSenderOut {

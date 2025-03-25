@@ -55,11 +55,11 @@ public class MessageStep implements Steps {
 
         MessageSenderIn messageSenderIn;
 
-
         messageSenderIn = this.whatsAppService;
 
-
-        //messageSenderIn.sendMessage("573228656468", message, "123");
+        System.out.println(messageSenderIn.sendMessage("573228656468", message, "123", true));
+        //messageSenderIn.sendMessage("573203298262", message, "321", true);
+        //messageSenderIn.sendMessage("573014507055", message, "321", true);
 
     }
 
