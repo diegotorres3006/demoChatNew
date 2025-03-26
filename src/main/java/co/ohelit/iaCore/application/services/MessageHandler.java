@@ -5,8 +5,10 @@ import co.ohelit.iaCore.domain.models.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class MessageHandler {
@@ -24,11 +26,15 @@ public class MessageHandler {
         this.whatsAppService = whatsAppService;
     }
 
+    private final Map<String, String> lastMessage = new ConcurrentHashMap<>();
+
     public void handleIncomingMessage(Message message) {
         if (message != null && "text".equals(message.getType())) {
             //String response = "Echo: " + message.getText().getBody();
             //messageSenderOut.sendMessage(message.getFrom(), response, message.getId());
             messageSenderOut.markAsRead(message.getId());
+
+            lastMessage.put(message.getFrom(), message.getId());
 
             // Buscar y completar la respuesta pendiente
             CompletableFuture<String> futureResponse = promesasService.obtenerYEliminarRespuestaPendiente(message.getFrom());
@@ -42,7 +48,9 @@ public class MessageHandler {
                     Long idReceta = Long.valueOf(promesa.join());
                     this.recipesRepository.iniciarReceta(this.recipesRepository.searchRecipe(idReceta), message.getFrom());
                 } catch (NumberFormatException e) {
-                    this.whatsAppService.sendMessage(message.getFrom(), "Se espera un número por respuesta\nVuelva a empezar con un 'hola'", message.getId(), false);
+                    String lastId = lastMessage.getOrDefault(message.getFrom(), message.getId());
+                    this.whatsAppService.sendMessage(message.getFrom(), "Se espera un número por respuesta\nVuelva a empezar con un 'hola'", lastId, false);
+
                 }
 
 
