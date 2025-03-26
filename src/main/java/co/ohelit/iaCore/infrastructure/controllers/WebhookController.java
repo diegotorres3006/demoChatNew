@@ -2,6 +2,7 @@ package co.ohelit.iaCore.infrastructure.controllers;
 import co.ohelit.iaCore.infrastructure.config.AppConfig;
 import co.ohelit.iaCore.domain.models.Message;
 import co.ohelit.iaCore.application.services.MessageHandler;
+import co.ohelit.iaCore.utils.JsonUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -10,43 +11,35 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import static co.ohelit.iaCore.utils.MapUtils.getFirstFromList;
+import static co.ohelit.iaCore.utils.MapUtils.getNestedValue;
 
 @RestController
 public class WebhookController {
 
     private final MessageHandler messageHandler;
     private final String webhookVerifyToken;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public WebhookController(AppConfig appConfig, MessageHandler messageHandler) {
         this.webhookVerifyToken = appConfig.getWebhookVerifyToken();
         this.messageHandler = messageHandler;
     }
 
-    @PostMapping
     public ResponseEntity<Void> handleIncoming(@RequestBody Map<String, Object> body) {
         try {
-            List<?> entryList = (List<?>) body.get("entry");
-            if (entryList != null && !entryList.isEmpty()) {
-                Map<String, Object> entry = (Map<String, Object>) entryList.get(0);
-                List<?> changesList = (List<?>) entry.get("changes");
-                if (changesList != null && !changesList.isEmpty()) {
-                    Map<String, Object> changes = (Map<String, Object>) changesList.get(0);
-                    Map<String, Object> value = (Map<String, Object>) changes.get("value");
-                    if (value != null) {
-                        List<?> messagesList = (List<?>) value.get("messages");
-                        if (messagesList != null && !messagesList.isEmpty()) {
-                            Map<String, Object> messageMap = (Map<String, Object>) messagesList.get(0);
+            Optional<Map<String, Object>> entryOpt = getFirstFromList(body, "entry");
+            Optional<Map<String, Object>> changesOpt = entryOpt.flatMap(entry -> getFirstFromList(entry, "changes"));
+            Optional<Map<String, Object>> valueOpt = changesOpt.flatMap(changes -> getNestedValue(changes, "value"));
+            Optional<Map<String, Object>> messageOpt = valueOpt.flatMap(value -> getFirstFromList(value, "messages"));
 
-                            // Convertir el mapa en un objeto Message
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            Message message = objectMapper.convertValue(messageMap, Message.class);
-
-                            // Procesar el mensaje // Delegar la lógica al caso de uso
-                            messageHandler.handleIncomingMessage(message);
-                        }
-                    }
-                }
-            }
+            messageOpt.ifPresent(messageMap -> {
+                ObjectMapper objectMapper = new ObjectMapper();
+                Message message = objectMapper.convertValue(messageMap, Message.class);
+                messageHandler.handleIncomingMessage(message);
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }

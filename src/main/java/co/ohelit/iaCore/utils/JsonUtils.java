@@ -21,17 +21,5 @@ public class JsonUtils {
         }
     }
 
-    public static <T> Optional<T> getNestedValue(Map<String, Object> map, String... keys) {
-        Object value = map;
-        for (String key : keys) {
-            if (value instanceof Map) {
-                value = ((Map<?, ?>) value).get(key);
-            } else if (value instanceof List<?> list && !list.isEmpty() && list.get(0) instanceof Map) {
-                value = list.get(0);
-            } else {
-                return Optional.empty();
-            }
-        }
-        return Optional.ofNullable((T) value);
-    }
+
 }
