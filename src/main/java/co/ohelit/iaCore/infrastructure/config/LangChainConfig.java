@@ -33,7 +33,7 @@ public LangChainConfig(AppConfig appConfig) {
         JdkHttpClientBuilder jdkHttpClientBuilder = JdkHttpClient.builder();
         return OllamaChatModel.builder()
                 .httpClientBuilder(jdkHttpClientBuilder)
-                .baseUrl("http://localhost:11434")
+                .baseUrl("http://ollama:11434")
                 .modelName("llama3.2:latest")
                 .build();
     }
