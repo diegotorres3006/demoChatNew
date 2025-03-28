@@ -1,9 +1,10 @@
-package co.ohelit.iaCore.infrastructure.controllers;
+package co.ohelit.iaCore.infrastructure.adapters;
+import co.ohelit.iaCore.domain.ports.in.MessageSenderIn;
 import co.ohelit.iaCore.infrastructure.config.AppConfig;
 import co.ohelit.iaCore.domain.models.Message;
-import co.ohelit.iaCore.application.services.MessageHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,14 +13,15 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-public class WebhookController {
+public class MessageIncomingAdapter {
 
-    private final MessageHandler messageHandler;
     private final String webhookVerifyToken;
+    private final MessageSenderIn messageSenderIn;
 
-    public WebhookController(AppConfig appConfig, MessageHandler messageHandler) {
+    public MessageIncomingAdapter(AppConfig appConfig,
+                                  @Qualifier("messageSenderIn") MessageSenderIn messageSenderIn) {
         this.webhookVerifyToken = appConfig.getWebhookVerifyToken();
-        this.messageHandler = messageHandler;
+        this.messageSenderIn = messageSenderIn;
     }
 
     @PostMapping
@@ -42,7 +44,9 @@ public class WebhookController {
                             Message message = objectMapper.convertValue(messageMap, Message.class);
 
                             // Procesar el mensaje // Delegar la lógica al caso de uso
-                            messageHandler.handleIncomingMessage(message);
+                            //messageHandler.handleIncomingMessage(message);
+                            System.out.println("holaaa");
+                            this.messageSenderIn.receiveMessage(message);
                         }
                     }
                 }
