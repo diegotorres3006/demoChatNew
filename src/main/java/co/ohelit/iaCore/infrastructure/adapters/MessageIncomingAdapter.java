@@ -1,10 +1,12 @@
-package co.ohelit.iaCore.infrastructure.controllers;
+package co.ohelit.iaCore.infrastructure.adapters;
+import co.ohelit.iaCore.domain.ports.in.MessageSenderIn;
 import co.ohelit.iaCore.infrastructure.config.AppConfig;
 import co.ohelit.iaCore.domain.models.Message;
 import co.ohelit.iaCore.application.services.MessageHandler;
 import co.ohelit.iaCore.utils.JsonUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,15 +19,15 @@ import static co.ohelit.iaCore.utils.MapUtils.getFirstFromList;
 import static co.ohelit.iaCore.utils.MapUtils.getNestedValue;
 
 @RestController
-public class WebhookController {
+public class MessageIncomingAdapter {
 
-    private final MessageHandler messageHandler;
     private final String webhookVerifyToken;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final MessageSenderIn messageSenderIn;
 
-    public WebhookController(AppConfig appConfig, MessageHandler messageHandler) {
+    public MessageIncomingAdapter(AppConfig appConfig,
+                                  @Qualifier("messageSenderIn") MessageSenderIn messageSenderIn) {
         this.webhookVerifyToken = appConfig.getWebhookVerifyToken();
-        this.messageHandler = messageHandler;
+        this.messageSenderIn = messageSenderIn;
     }
 
     public ResponseEntity<Void> handleIncoming(@RequestBody Map<String, Object> body) {
@@ -34,12 +36,15 @@ public class WebhookController {
             Optional<Map<String, Object>> changesOpt = entryOpt.flatMap(entry -> getFirstFromList(entry, "changes"));
             Optional<Map<String, Object>> valueOpt = changesOpt.flatMap(changes -> getNestedValue(changes, "value"));
             Optional<Map<String, Object>> messageOpt = valueOpt.flatMap(value -> getFirstFromList(value, "messages"));
-
+                 
             messageOpt.ifPresent(messageMap -> {
-                ObjectMapper objectMapper = new ObjectMapper();
-                Message message = objectMapper.convertValue(messageMap, Message.class);
-                messageHandler.handleIncomingMessage(message);
+            // Convertir el mapa en un objeto Message
+            ObjectMapper objectMapper = new ObjectMapper();
+            Message message = objectMapper.convertValue(messageMap, Message.class);
+            System.out.println("holaaa");
+            this.messageSenderIn.receiveMessage(message);
             });
+                       
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,7 +1,6 @@
 package co.ohelit.iaCore.application.repositories;
 
 import co.ohelit.iaCore.application.services.RecipesService;
-import co.ohelit.iaCore.application.services.WhatsAppService;
 import co.ohelit.iaCore.application.services.YamlService;
 import co.ohelit.iaCore.application.stepsStrategy.ApiStep;
 import co.ohelit.iaCore.application.stepsStrategy.IaStep;

@@ -26,8 +26,7 @@ public class RecipesController {
 
     private final RecipesService recipesService;
     private final YamlService yamlService;
-    private final WhatsAppService whatsAppService;
-    private final MessengerService messengerService;
+    private final MessageSenderService messageSenderService;
     private final RecipesRepository recipesRepository;
     private final WebClientService webClientService;
     private final QuysUtils quysUtils;
@@ -35,17 +34,30 @@ public class RecipesController {
     private final String telQuemado = "573228656468";
 
     @Autowired
-    public RecipesController(RecipesService recipesService, YamlService yamlService, WhatsAppService whatsAppService,
-                             MessengerService messengerService, RecipesRepository recipesRepository,
-                             WebClientService webClientService, QuysUtils quysUtils, OpenAiChatService openAiChatService){
+    private RedisCacheService redisCacheService;
+
+    @Autowired
+    public RecipesController(RecipesService recipesService, YamlService yamlService, MessageSenderService messageSenderService,
+                             RecipesRepository recipesRepository, WebClientService webClientService,
+                             QuysUtils quysUtils, OpenAiChatService openAiChatService){
         this.recipesService = recipesService;
         this.yamlService = yamlService;
-        this.whatsAppService = whatsAppService;
-        this.messengerService = messengerService;
+        this.messageSenderService = messageSenderService;
         this.recipesRepository = recipesRepository;
         this.webClientService = webClientService;
         this.quysUtils = quysUtils;
         this.openAiChatService = openAiChatService;
+    }
+
+    @GetMapping("/guardar/{clave}/{valor}")
+    public String guardar(@PathVariable String clave, @PathVariable String valor) {
+        this.redisCacheService.saveData(clave, valor);
+        return "Guardado en Redis!";
+    }
+
+    @GetMapping("/obtener/{clave}")
+    public Object obtener(@PathVariable String clave) {
+        return this.redisCacheService.getData(clave);
     }
 
     @GetMapping("/recipes")
@@ -114,7 +126,7 @@ public class RecipesController {
         );
 
         YamlService yamlService = new YamlService();
-        MessageStep messageStep = new MessageStep(this.whatsAppService, this.messengerService);
+        MessageStep messageStep = new MessageStep(this.messageSenderService);
         IaStep iaStep = new IaStep(this.openAiChatService);
         ApiStep apiStep = new ApiStep(this.webClientService, this.quysUtils);
 

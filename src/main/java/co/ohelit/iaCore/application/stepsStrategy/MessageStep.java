@@ -1,7 +1,6 @@
 package co.ohelit.iaCore.application.stepsStrategy;
 
-import co.ohelit.iaCore.application.services.MessengerService;
-import co.ohelit.iaCore.application.services.WhatsAppService;
+import co.ohelit.iaCore.application.services.MessageSenderService;
 import co.ohelit.iaCore.domain.ports.in.MessageSenderIn;
 import org.springframework.stereotype.Component;
 
@@ -11,12 +10,10 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class MessageStep implements Steps {
 
-    private final WhatsAppService whatsAppService;
-    private final MessengerService messengerService;
+    private final MessageSenderService messageSenderService;
 
-    public MessageStep( WhatsAppService whatsAppService, MessengerService messengerService){
-        this.whatsAppService = whatsAppService;
-        this.messengerService = messengerService;
+    public MessageStep(MessageSenderService messageSenderService){
+        this.messageSenderService = messageSenderService;
     }
 
     @Override
@@ -47,19 +44,17 @@ public class MessageStep implements Steps {
 
         System.out.println(variableNumber +" "+ dataType +" "+ nextStep +" "+ message);
 
-        MessageSenderIn messageSenderIn;
-        messageSenderIn = this.whatsAppService;
 
         if(variableNumber != null){
             System.out.println("Se supone que tengo que guardar la respuesta del usuario");
-            CompletableFuture<String> promesa = messageSenderIn.sendMessage(origin, message, "123", true);
+            CompletableFuture<String> promesa = this.messageSenderService.sendMessage(origin, message, "123", true);
             promesa.join();
 
             //messageSenderIn.sendMessage("573203298262", message, "321", true);
             //messageSenderIn.sendMessage("573014507055", message, "321", true);
         } else {
             System.out.println("No debo guardar nadota");
-            messageSenderIn.sendMessage(origin, message, "123", false);
+            this.messageSenderService.sendMessage(origin, message, "123", false);
         }
 
     }
