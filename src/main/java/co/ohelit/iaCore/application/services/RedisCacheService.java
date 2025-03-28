@@ -19,8 +19,12 @@ public class RedisCacheService {
     }
 
     //Obtener valores
-    public String getData(String key){
-        return (String) redisTemplate.opsForValue().get(key);
+    public String getData(String key) {
+        String data = (String) redisTemplate.opsForValue().get(key);
+        if (data == null) {
+            throw new RuntimeException("Clave no encontrada en Redis");
+        }
+        return data;
     }
 
     //Crear un hash

@@ -56,7 +56,7 @@ public class RecipesController {
     }
 
     @GetMapping("/obtener/{clave}")
-    public Object obtener(@PathVariable String clave) {
+    public String obtener(@PathVariable String clave) {
         return this.redisCacheService.getData(clave);
     }
 

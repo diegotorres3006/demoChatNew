@@ -2,7 +2,7 @@ package co.ohelit.iaCore.infrastructure.adapters;
 import co.ohelit.iaCore.domain.ports.in.MessageSenderIn;
 import co.ohelit.iaCore.infrastructure.config.AppConfig;
 import co.ohelit.iaCore.domain.models.Message;
-import co.ohelit.iaCore.application.services.MessageHandler;
+import co.ohelit.iaCore.application.services.MessageHandlerService;
 import co.ohelit.iaCore.utils.JsonUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;

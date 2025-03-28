@@ -12,9 +12,8 @@ import java.util.Map;
 @Service
 public class YamlService {
 
-    @Autowired
-    public YamlService(){
-    }
+
+
 
     // Metodo para pasar de yaml a Json
     public List<Map<String, Object>> yamlToJson(String yamlString) {
