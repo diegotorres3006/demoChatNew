@@ -33,3 +33,5 @@ build/
 .vscode/
 ##Properties
 *.properties
+#Docker compose
+docker-compose.yml
