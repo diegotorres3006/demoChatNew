@@ -1,5 +1,17 @@
 services:
-
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    networks:
+      - app-network
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      "ollama serve & sleep 2 && ollama pull llama3.2 && wait"
+    restart: always
   whatsap:
     image: whats_serve_1_0
     container_name: whatsap
