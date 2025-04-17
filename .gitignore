@@ -32,6 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 ##Properties
-*.properties
+#*.properties
 #Docker compose
-docker-compose.yml
+#docker-compose.yml

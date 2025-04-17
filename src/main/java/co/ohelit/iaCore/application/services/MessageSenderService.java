@@ -1,6 +1,5 @@
 package co.ohelit.iaCore.application.services;
 
-import co.ohelit.iaCore.domain.models.Message;
 import co.ohelit.iaCore.infrastructure.adapters.WhatsAppAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -12,8 +11,7 @@ import java.util.concurrent.CompletableFuture;
 public class MessageSenderService{
 
     private final WhatsAppAdapter whatsAppAdapter;
-    @Autowired
-    private PromesasService promesasService;
+
 
     @Autowired
     public MessageSenderService(WhatsAppAdapter whatsAppAdapter){
@@ -24,7 +22,7 @@ public class MessageSenderService{
     public CompletableFuture<String> sendMessage(String recipient, String text, String messageId, boolean wait) {
         if(wait){
             CompletableFuture<String> futureResponse = new CompletableFuture<>();
-            this.promesasService.agregarRespuestaPendiente(recipient, futureResponse);
+
             this.whatsAppAdapter.sendMessage(recipient, text, messageId);
             return futureResponse;
         } else {
