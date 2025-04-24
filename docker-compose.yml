@@ -22,6 +22,19 @@ services:
     # volumes:
     #   - ./entrypoint.sh:/entrypoint.sh
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: rabbit-host
+    ports:
+      - "5672:5672"     # Puerto para apps (Spring Boot)
+      - "15672:15672"   # Panel web (http://localhost:15672)
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - backend
+
 
 networks:
   app-network:

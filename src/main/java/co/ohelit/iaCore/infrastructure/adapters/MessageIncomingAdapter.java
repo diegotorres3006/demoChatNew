@@ -39,7 +39,6 @@ public class MessageIncomingAdapter {
             // Convertir el mapa en un objeto Message
             ObjectMapper objectMapper = new ObjectMapper();
             Message message = objectMapper.convertValue(messageMap, Message.class);
-            System.out.println("holaaa");
             this.messageSenderIn.receiveMessage(message);
             });
                        
